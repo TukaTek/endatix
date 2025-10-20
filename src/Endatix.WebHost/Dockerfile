@@ -1,7 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
-COPY ./src .
-WORKDIR /src/Endatix.WebHost
+COPY Directory.Build.props Directory.Packages.props ./
+COPY ./src ./src
+WORKDIR /src/src/Endatix.WebHost
 RUN dotnet restore
 RUN dotnet publish -c Release -o /app/publish
 
