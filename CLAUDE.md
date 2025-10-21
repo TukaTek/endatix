@@ -27,7 +27,7 @@ The solution follows clean architecture dependency rules where inner layers have
 ### Key Architectural Patterns
 
 **Vertical Slice Architecture**: Features are organized by business capability rather than technical concerns:
-- `src/Endatix.Core/UseCases/` - Business use cases organized by feature (FormDefinitions, Submissions, etc.)
+- `src/Endatix.Core/UseCases/` - Business use cases organized by feature (FormDefinitions, Submissions, Tenants, etc.)
 - `src/Endatix.Api/Endpoints/` - API endpoints organized by feature matching use cases
 - Each feature contains its own handlers, validators, and models
 
@@ -44,6 +44,7 @@ The solution follows clean architecture dependency rules where inner layers have
 - Custom ASP.NET Core Identity in `src/Endatix.Infrastructure/Identity/`
 - Multi-tenant support via `ITenantOwned` interface and `TenantEntity` base class
 - Multiple authentication providers supported (JWT, OAuth, etc.)
+- Tenant management APIs available at `/tenants` (Create, List, Get, Update, Delete)
 
 ## Common Development Commands
 
@@ -190,8 +191,10 @@ public class MyEntity { ... }
 
 ### API Endpoints (FastEndpoints)
 - Endpoint classes in `src/Endatix.Api/Endpoints/[Feature]/`
-- Group related endpoints by feature (Auth, Forms, Submissions, etc.)
+- Group related endpoints by feature (Auth, Forms, Submissions, Tenants, etc.)
 - Use FastEndpoints conventions for versioning, validation, and security
+- All endpoints return typed results using `TypedResultsBuilder` for consistent error handling
+- Endpoint signature types must match `SetTypedResults<>` order for implicit conversion to work
 
 ### Domain Events
 - Event definitions: `src/Endatix.Core/Events/`
@@ -257,4 +260,75 @@ Simpler version (all defaults):
 ```csharp
 builder.Host.ConfigureEndatix();
 app.UseEndatix();
+```
+
+## Multi-Tenancy
+
+The application has built-in multi-tenancy support with full CRUD APIs for tenant management.
+
+### Tenant Management
+
+**Available Endpoints** (all require authentication):
+- `POST /tenants` - Create a new tenant
+- `GET /tenants` - List all tenants
+- `GET /tenants/{id}` - Get a specific tenant by ID
+- `PUT /tenants/{id}` - Update tenant details (name, description)
+- `DELETE /tenants/{id}` - Soft delete a tenant
+
+**Tenant Entity** ([src/Endatix.Core/Entities/Tenant.cs](src/Endatix.Core/Entities/Tenant.cs)):
+- Properties: `Id`, `Name`, `Description`
+- Inherits from `BaseEntity` (soft delete support, audit fields)
+- Update methods: `UpdateName()`, `UpdateDescription()`
+
+**Use Cases** ([src/Endatix.Core/UseCases/Tenants/](src/Endatix.Core/UseCases/Tenants/)):
+- Each operation has a command/query and handler following CQRS pattern
+- Create, List, Get, Update, Delete
+
+**API Implementation** ([src/Endatix.Api/Endpoints/Tenants/](src/Endatix.Api/Endpoints/Tenants/)):
+- FastEndpoints with typed request/response models
+- Consistent error handling via `TypedResultsBuilder`
+- Returns appropriate HTTP status codes (200 OK, 201 Created, 404 NotFound, 400 BadRequest)
+
+### Testing Tenant APIs
+
+**Via Swagger UI**:
+1. Run the application: `dotnet run --project src/Endatix.WebHost/Endatix.WebHost.csproj`
+2. Navigate to https://localhost:5001/swagger
+3. Find the "Tenants" section with all CRUD operations
+
+**Via curl**:
+```bash
+# List all tenants
+curl -X GET "https://localhost:5001/tenants" -H "accept: application/json"
+
+# Create a new tenant
+curl -X POST "https://localhost:5001/tenants" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Acme Corp","description":"Primary tenant for Acme Corporation"}'
+
+# Get tenant by ID
+curl -X GET "https://localhost:5001/tenants/1" -H "accept: application/json"
+
+# Update tenant
+curl -X PUT "https://localhost:5001/tenants/1" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Acme Corporation","description":"Updated description"}'
+
+# Delete tenant (soft delete)
+curl -X DELETE "https://localhost:5001/tenants/1" -H "accept: application/json"
+```
+
+### Local Development with Azure PostgreSQL
+
+To test locally with the Azure PostgreSQL database, update [src/Endatix.WebHost/appsettings.Development.json](src/Endatix.WebHost/appsettings.Development.json):
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=caif-backend-db.postgres.database.azure.com;Database=endatix;Username=caifadmin;Password=XUP747Nr5sih7LW4ydrR;SslMode=Require",
+    "DefaultConnection_DbProvider": "PostgreSql"
+  }
+}
 ```

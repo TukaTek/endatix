@@ -55,6 +55,17 @@ namespace Endatix.Core.Entities
             SlackSettingsJson = JsonSerializer.Serialize(settings);
         }
 
+        public void UpdateName(string name)
+        {
+            Guard.Against.NullOrEmpty(name, nameof(name));
+            Name = name;
+        }
+
+        public void UpdateDescription(string? description)
+        {
+            Description = description;
+        }
+
         private SlackSettings DeserializeSlackSettings()
         {
             if (string.IsNullOrEmpty(SlackSettingsJson))
