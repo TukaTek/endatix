@@ -35,15 +35,9 @@ public class SendVerificationEmailHandler(
         }
 
         var user = userResult.Value!;
-        if (user.IsVerified)
-        {
-            // Log the attempt to send verification email to already verified user
-            logger.LogWarning("Verification email requested for already verified user: {Email} (UserId: {UserId})",
-                request.Email, user.Id);
-            
-            // Return success to prevent email enumeration attacks
-            return Result.Success();
-        }
+
+        // Allow resending verification emails even for verified users (in case they need to re-verify)
+        // This is useful if the original email was never received or the user wants to change their email
 
         var tokenResult = await emailVerificationService.CreateVerificationTokenAsync(user.Id, cancellationToken);
         if (tokenResult.IsSuccess)
