@@ -48,7 +48,9 @@ public class AppUserRegistrationService(
     /// <inheritdoc />
     public async Task<Result<User>> RegisterUserAsync(string email, string password, CancellationToken cancellationToken)
     {
-        return await RegisterUserAsync(email, password, tenantId: 0, isEmailConfirmed: false, cancellationToken);
+        // Default new users to tenant 1 (Default Tenant) for now
+        // TODO: Implement invitation-based tenant assignment (users should be invited to specific tenants)
+        return await RegisterUserAsync(email, password, tenantId: 1, isEmailConfirmed: false, cancellationToken);
     }
 
     /// <inheritdoc />
