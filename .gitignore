@@ -53,6 +53,9 @@ Thumbs.db
 
 # Environment variables & secrets
 .env
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
 
 # Test coverage reports
 .coverage/
