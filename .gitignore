@@ -58,3 +58,7 @@ Thumbs.db
 .coverage/
 
 .secrets
+deploy.zip
+
+# publish folder
+publish/
