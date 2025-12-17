@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Endatix.Api.Infrastructure;
 using Endatix.Core.UseCases.Forms.Update;
-using Endatix.Infrastructure.Identity.Authorization;
+using Endatix.Core.Abstractions.Authorization;
 
 namespace Endatix.Api.Endpoints.Forms;
 
@@ -18,7 +18,7 @@ public class Update(IMediator mediator) : Endpoint<UpdateFormRequest, Results<Ok
     public override void Configure()
     {
         Put("forms/{formId}");
-        Permissions(Allow.AllowAll);
+        Permissions(Actions.Forms.Edit);
         Summary(s =>
         {
             s.Summary = "Update a form";
@@ -33,7 +33,7 @@ public class Update(IMediator mediator) : Endpoint<UpdateFormRequest, Results<Ok
     public override async Task<Results<Ok<UpdateFormResponse>, BadRequest, NotFound>> ExecuteAsync(UpdateFormRequest request, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(
-            new UpdateFormCommand(request.FormId, request.Name!, request.Description, request.IsEnabled!.Value),
+            new UpdateFormCommand(request.FormId, request.Name!, request.Description, request.IsEnabled!.Value, request.WebHookSettingsJson),
             cancellationToken);
 
         return TypedResultsBuilder

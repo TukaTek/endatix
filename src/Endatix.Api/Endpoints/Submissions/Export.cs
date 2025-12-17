@@ -9,10 +9,13 @@ using MediatR;
 using Endatix.Core.Infrastructure.Result;
 using System.Text.Json;
 using System.IO.Pipelines;
-using Endatix.Infrastructure.Identity.Authorization;
+using Endatix.Core.Abstractions.Authorization;
 
 namespace Endatix.Api.Endpoints.Submissions;
 
+/// <summary>
+/// Endpoint for exporting form submissions.
+/// </summary>
 public class Export : Endpoint<ExportRequest>
 {
     private readonly IMediator _mediator;
@@ -32,7 +35,7 @@ public class Export : Endpoint<ExportRequest>
     public override void Configure()
     {
         Post("forms/{formId}/submissions/export");
-        Permissions(Allow.AllowAll);
+        Permissions(Actions.Submissions.Export);
         Summary(s =>
        {
            s.Summary = "Export submissions";
@@ -82,7 +85,8 @@ public class Export : Endpoint<ExportRequest>
                 FormId: request.FormId,
                 Exporter: exporter,
                 Options: options,
-                OutputWriter: pipeWriter
+                OutputWriter: pipeWriter,
+                ExportId: request.ExportId
             );
 
             // Execute the export

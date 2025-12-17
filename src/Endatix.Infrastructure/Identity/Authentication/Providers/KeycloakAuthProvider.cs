@@ -1,4 +1,3 @@
-using System;
 using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
@@ -38,7 +37,7 @@ public class KeycloakAuthProvider : IAuthProvider
         }
 
         var keycloakIssuer = keycloakOptions.Issuer;
-        Guard.Against.NullOrWhiteSpace(keycloakIssuer);
+        Guard.Against.NullOrWhiteSpace(keycloakIssuer, nameof(KeycloakOptions.Issuer));
 
         _cachedIssuer = keycloakIssuer;
 

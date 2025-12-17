@@ -17,7 +17,7 @@ namespace Endatix.Persistence.PostgreSQL.Migrations.AppEntities
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -132,6 +132,9 @@ namespace Endatix.Persistence.PostgreSQL.Migrations.AppEntities
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -145,6 +148,9 @@ namespace Endatix.Persistence.PostgreSQL.Migrations.AppEntities
 
                     b.Property<long?>("ThemeId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("WebHookSettingsJson")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -384,12 +390,39 @@ namespace Endatix.Persistence.PostgreSQL.Migrations.AppEntities
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("SlackSettingsJson")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("Tenants", (string)null);
+                });
+
+            modelBuilder.Entity("Endatix.Core.Entities.TenantSettings", b =>
+                {
+                    b.Property<long>("TenantId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CustomExportsJson")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsSubmissionTokenValidAfterCompletion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SlackSettingsJson")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("SubmissionTokenExpiryHours")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("WebHookSettingsJson")
+                        .HasColumnType("text");
+
+                    b.HasKey("TenantId");
+
+                    b.ToTable("TenantSettings", (string)null);
                 });
 
             modelBuilder.Entity("Endatix.Core.Entities.Theme", b =>
@@ -532,7 +565,7 @@ namespace Endatix.Persistence.PostgreSQL.Migrations.AppEntities
                             b1.Property<long>("SubmissionId")
                                 .HasColumnType("bigint");
 
-                            b1.Property<DateTime>("ExpiresAt")
+                            b1.Property<DateTime?>("ExpiresAt")
                                 .HasColumnType("timestamp with time zone");
 
                             b1.Property<string>("Value")
@@ -571,6 +604,17 @@ namespace Endatix.Persistence.PostgreSQL.Migrations.AppEntities
                     b.Navigation("Submission");
                 });
 
+            modelBuilder.Entity("Endatix.Core.Entities.TenantSettings", b =>
+                {
+                    b.HasOne("Endatix.Core.Entities.Tenant", "Tenant")
+                        .WithOne("Settings")
+                        .HasForeignKey("Endatix.Core.Entities.TenantSettings", "TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("Endatix.Core.Entities.Theme", b =>
                 {
                     b.HasOne("Endatix.Core.Entities.Tenant", "Tenant")
@@ -597,6 +641,8 @@ namespace Endatix.Persistence.PostgreSQL.Migrations.AppEntities
                     b.Navigation("FormDefinitions");
 
                     b.Navigation("Forms");
+
+                    b.Navigation("Settings");
 
                     b.Navigation("Submissions");
                 });

@@ -10,7 +10,7 @@ Endatix is an open-source backend for SurveyJS projects that can be integrated i
 
 ## Prerequisites
 
-- **.NET 9.0 and above** (for NuGet & Git Repository options)
+- **.NET 10.0 and above** (for NuGet & Git Repository options)
 - **Docker** (for Docker Container option)
 
 ## Choose Your Installation Method
@@ -19,7 +19,7 @@ Choose the installation method that best fits your needs:
 
 | Method                                | Best For                                           | Requirements  | Time to Setup |
 | ------------------------------------- | -------------------------------------------------- | ------------- | ------------- |
-| [NuGet Package ->](#install-via-git-repository)       | .NET developers integrating with existing projects | .NET 9.0+     | ~5-10 min         |
+| [NuGet Package ->](#install-via-git-repository)       | .NET developers integrating with existing projects | .NET 10.0+     | ~5-10 min         |
 | [Docker Container ->](#install-via-docker-container) | Standalone deployment or non-.NET stacks           | Docker        | ~5 min         |
 | [Git Repository ->](#install-via-git-repository)     | Contributors or customization                      | Git, .NET SDK | ~5 min        |
 
@@ -51,7 +51,7 @@ app.UseEndatix();
 **Important:** The Docker image is currently outdated and does not include the latest features available in the NuGet packages. This section will be removed once Docker images are updated to match the latest NuGet releases.
 :::
 
-[Follow the detailed Docker setup guide →](/docs/getting-started/setup-docker)
+[Follow the detailed Docker setup guide →](/docs/guides/docker-setup)
 
 ### Install via Git Repository
 
