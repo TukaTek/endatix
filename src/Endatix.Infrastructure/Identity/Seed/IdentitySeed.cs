@@ -1,5 +1,6 @@
 using Ardalis.GuardClauses;
 using Endatix.Core.Abstractions;
+using Endatix.Core.Abstractions.Authorization;
 using Endatix.Infrastructure.Data;
 using Endatix.Infrastructure.Identity.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -71,6 +72,24 @@ namespace Endatix.Infrastructure.Identity.Seed
             {
                 logger.LogInformation("👤 Initial user {Email} created successfully! Please use it to authenticate.", email);
                 logger.LogInformation("🔐 The default password is {Password}. Please change it after logging in.", password);
+
+                // Assign Admin role to the initial user
+                var user = await userManager.FindByEmailAsync(email);
+                if (user != null)
+                {
+                    var roleResult = await userManager.AddToRoleAsync(user, SystemRole.Admin.Name);
+                    if (roleResult.Succeeded)
+                    {
+                        logger.LogInformation("👑 Admin role assigned to initial user {Email}", email);
+                    }
+                    else
+                    {
+                        logger.LogError(
+                            "❌ Failed to assign Admin role to initial user {Email}. Errors: {Errors}",
+                            email,
+                            string.Join(", ", roleResult.Errors.Select(e => e.Description)));
+                    }
+                }
             }
             else
             {
