@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git merge:*)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(dotnet build:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(tasklist /FI \"PID eq 58628\" /FO TABLE)",
+      "Bash(powershell -Command \"Get-Process -Id 58628 | Select-Object Id, ProcessName, Path\")"
+    ]
+  }
+}

@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Endatix.Api.Infrastructure;
 using Endatix.Core.UseCases.Tenants.Update;
-using Endatix.Infrastructure.Identity.Authorization;
+using Endatix.Core.Abstractions.Authorization;
 
 namespace Endatix.Api.Endpoints.Tenants;
 
@@ -18,7 +18,7 @@ public class Update(IMediator mediator) : Endpoint<UpdateTenantRequest, Results<
     public override void Configure()
     {
         Put("tenants/{id}");
-        Permissions(Allow.AllowAll);
+        Permissions(Actions.Platform.ManageTenants);
         Summary(s =>
         {
             s.Summary = "Update a tenant";

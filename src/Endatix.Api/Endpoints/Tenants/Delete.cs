@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Endatix.Api.Infrastructure;
 using Endatix.Core.UseCases.Tenants.Delete;
-using Endatix.Infrastructure.Identity.Authorization;
+using Endatix.Core.Abstractions.Authorization;
 
 namespace Endatix.Api.Endpoints.Tenants;
 
@@ -18,7 +18,7 @@ public class Delete(IMediator mediator) : Endpoint<DeleteTenantRequest, Results<
     public override void Configure()
     {
         Delete("tenants/{id}");
-        Permissions(Allow.AllowAll);
+        Permissions(Actions.Platform.ManageTenants);
         Summary(s =>
         {
             s.Summary = "Delete a tenant";

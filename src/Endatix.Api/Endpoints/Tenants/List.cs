@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Endatix.Api.Infrastructure;
 using Endatix.Core.UseCases.Tenants.List;
-using Endatix.Infrastructure.Identity.Authorization;
+using Endatix.Core.Abstractions.Authorization;
 
 namespace Endatix.Api.Endpoints.Tenants;
 
@@ -18,7 +18,7 @@ public class List(IMediator mediator) : EndpointWithoutRequest<Results<Ok<ListTe
     public override void Configure()
     {
         Get("tenants");
-        Permissions(Allow.AllowAll);
+        Permissions(Actions.Platform.ManageTenants);
         Summary(s =>
         {
             s.Summary = "List all tenants";
